@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
+from django.db import models
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -48,6 +49,9 @@ def register_view(request):
             login(request, user)
             messages.success(request, f"Account created successfully. Welcome, {user.username}!")
             return redirect('dashboard')
+        else:
+            # Add error message if form is invalid
+            messages.error(request, "Registration failed. Please correct the errors below.")
     else:
         form = ClientRegistrationForm()
     return render(request, 'stock/register.html', {'form': form})

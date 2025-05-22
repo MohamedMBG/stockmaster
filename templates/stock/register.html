@@ -18,6 +18,28 @@
                 <p class="text-center text-muted">Register as a client to access StockMaster services</p>
             </div>
             
+            {% if messages %}
+            <div class="alert alert-danger">
+                {% for message in messages %}
+                    <p {% if message.tags %}class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <p>Please correct the errors below:</p>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ field.label }}: {{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <form method="post" action="{% url 'register' %}">
                 {% csrf_token %}
                 
@@ -25,7 +47,7 @@
                     <label for="id_username" class="form-label">Username</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                        <input type="text" name="username" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" placeholder="Enter your username" value="{{ form.username.value|default:'' }}" required>
                     </div>
                 </div>
                 
@@ -33,7 +55,39 @@
                     <label for="id_email" class="form-label">Email</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                        <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" required>
+                        <input type="email" name="email" id="id_email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" placeholder="Enter your email" value="{{ form.email.value|default:'' }}" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_first_name" class="form-label">First Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" name="first_name" id="id_first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" placeholder="Enter your first name" value="{{ form.first_name.value|default:'' }}" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_last_name" class="form-label">Last Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" name="last_name" id="id_last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" placeholder="Enter your last name" value="{{ form.last_name.value|default:'' }}" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_phone_number" class="form-label">Phone Number</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                        <input type="text" name="phone_number" id="id_phone_number" class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}" placeholder="Enter your phone number" value="{{ form.phone_number.value|default:'' }}" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_user_address" class="form-label">Address (Optional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                        <textarea name="user_address" id="id_user_address" class="form-control {% if form.user_address.errors %}is-invalid{% endif %}" placeholder="Enter your address (optional)" rows="3">{{ form.user_address.value|default:'' }}</textarea>
                     </div>
                 </div>
                 
@@ -41,15 +95,18 @@
                     <label for="id_password1" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                        <input type="password" name="password1" id="id_password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" placeholder="Enter your password" required>
                     </div>
+                    {% if form.password1.help_text %}
+                    <small class="form-text text-muted">{{ form.password1.help_text|safe }}</small>
+                    {% endif %}
                 </div>
                 
                 <div class="mb-4">
                     <label for="id_password2" class="form-label">Confirm Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                        <input type="password" name="password2" id="id_password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" placeholder="Confirm your password" required>
                     </div>
                 </div>
                 

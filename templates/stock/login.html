@@ -18,14 +18,31 @@
                 <h3 class="text-center mb-4">Sign In to StockMaster</h3>
             </div>
             
+            {% if messages %}
+            <div class="alert alert-danger">
+                {% for message in messages %}
+                    <p {% if message.tags %}class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <p>Invalid email or password. Please try again.</p>
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <form method="post" action="{% url 'login' %}">
                 {% csrf_token %}
                 
                 <div class="mb-3">
-                    <label for="id_username" class="form-label">Username</label>
+                    <label for="id_username" class="form-label">Email</label>
                     <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter your username" required>
+                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                        <input type="email" name="username" id="id_username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" placeholder="Enter your email" value="{{ form.username.value|default:'' }}" required>
                     </div>
                 </div>
                 
@@ -33,7 +50,7 @@
                     <label for="id_password" class="form-label">Password</label>
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                        <input type="password" name="password" id="id_password" class="form-control" placeholder="Enter your password" required>
+                        <input type="password" name="password" id="id_password" class="form-control {% if form.password.errors %}is-invalid{% endif %}" placeholder="Enter your password" required>
                     </div>
                 </div>
                 

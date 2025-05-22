@@ -22,10 +22,27 @@ class ClientRegistrationForm(UserCreationForm):
         'class': 'form-control',
         'placeholder': 'Enter your email',
     }))
+    first_name = forms.CharField(required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter your first name',
+    }))
+    last_name = forms.CharField(required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter your last name',
+    }))
+    phone_number = forms.CharField(required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter your phone number',
+    }))
+    user_address = forms.CharField(required=False, widget=forms.Textarea(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter your address (optional)',
+        'rows': 3,
+    }))
     
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ('username', 'email', 'first_name', 'last_name', 'phone_number', 'user_address', 'password1', 'password2')
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,14 +51,19 @@ class ClientRegistrationForm(UserCreationForm):
         
         # Style form fields
         for field_name in self.fields:
-            self.fields[field_name].widget.attrs.update({
-                'class': 'form-control',
-                'placeholder': f'Enter your {field_name.replace("_", " ")}',
-            })
+            if 'class' not in self.fields[field_name].widget.attrs:
+                self.fields[field_name].widget.attrs.update({
+                    'class': 'form-control',
+                    'placeholder': f'Enter your {field_name.replace("_", " ")}',
+                })
     
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.phone_number = self.cleaned_data['phone_number']
+        user.user_address = self.cleaned_data.get('user_address', '')
         user.role = User.Role.CLIENT
         if commit:
             user.save()
