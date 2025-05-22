@@ -5,7 +5,7 @@ from django.db.models import Sum, Count, F, Q
 from django.utils import timezone
 from datetime import timedelta
 
-from core.models.user import User
+from stock.models import User
 from core.models.product import Product, Category
 from core.models.order import Order, OrderItem
 from core.decorators import admin_required, supervisor_required

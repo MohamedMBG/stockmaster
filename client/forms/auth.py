@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from core.models.user import User
+from stock.models import User
 
 class ClientLoginForm(forms.Form):
     """

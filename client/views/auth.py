@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from client.forms.auth import ClientLoginForm, ClientRegistrationForm
-from core.models.user import User
+from stock.models import User
 from core.decorators import client_required
 
 def client_login_view(request):

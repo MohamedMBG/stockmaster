@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 
 from admin_portal.forms.auth import AdminLoginForm
-from core.models.user import User
+from stock.models import User
 from core.decorators import admin_required, supervisor_required
 
 def admin_login_view(request):

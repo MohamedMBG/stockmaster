@@ -1,7 +1,10 @@
 from django.db import models
 from django.utils import timezone
-from core.models.user import User
+from django.conf import settings
 from core.models.product import Product
+
+# Use the AUTH_USER_MODEL setting instead of direct import
+User = settings.AUTH_USER_MODEL
 
 class Order(models.Model):
     """Order model for tracking customer orders."""
@@ -13,7 +16,7 @@ class Order(models.Model):
         ('CANCELLED', 'Cancelled'),
     )
     
-    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    client = models.ForeignKey(User, on_delete=models.CASCADE, related_name='core_orders')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     shipping_address = models.TextField()

@@ -10,8 +10,8 @@ from client.views.catalog import (
 )
 
 urlpatterns = [
-    # Original stock views
-    path('', views.home, name='home'),
+    # Original stock views - Updated to use dashboard instead of missing home view
+    path('', views.dashboard, name='dashboard'),
     path('login/', client_login_view, name='login'),
     path('register/', client_register_view, name='register'),
     path('logout/', client_logout_view, name='logout'),
