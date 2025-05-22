@@ -15,6 +15,7 @@
   --shadow-sm: 0 2px 4px rgba(31, 45, 61, 0.1);
   --shadow-md: 0 3px 12px rgba(31, 45, 61, 0.08);
   --shadow-lg: 0 5px 25px rgba(31, 45, 61, 0.1);
+  --sidebar-width: 280px;
 }
 
 body {
@@ -59,10 +60,11 @@ a:hover {
   min-height: 100vh;
   flex-grow: 1;
   transition: margin 0.3s;
+  width: 100%;
 }
 
 .has-sidebar {
-  margin-left: 280px;
+  margin-left: var(--sidebar-width);
 }
 
 .nk-content {
@@ -76,7 +78,7 @@ a:hover {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 280px;
+  width: var(--sidebar-width);
   background-color: #fff;
   border-right: 1px solid var(--border-light);
   z-index: 999;
