@@ -1,0 +1,41 @@
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from core.models.user import User
+
+class AdminLoginForm(forms.Form):
+    """
+    Form for admin and supervisor login.
+    """
+    username = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Enter your email'
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Enter your password'
+        })
+    )
+
+class SupervisorCreationForm(UserCreationForm):
+    """
+    Form for creating a new supervisor user.
+    """
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'phone_number', 'user_address')
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add Bootstrap classes to form fields
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = 'SUPERVISOR'
+        if commit:
+            user.save()
+        return user

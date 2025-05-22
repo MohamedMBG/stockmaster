@@ -5,8 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from core.models.user import User
 from admin_portal.forms.auth import AdminLoginForm
+from core.models.user import User
+from core.decorators import admin_required, supervisor_required
 
 def admin_login_view(request):
     """

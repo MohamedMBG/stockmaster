@@ -76,7 +76,7 @@ def admin_add_supervisor(request):
     """
     View for admin to add a new supervisor.
     """
-    from admin_portal.forms.user import SupervisorCreationForm
+    from admin_portal.forms.auth import SupervisorCreationForm
     
     if request.method == 'POST':
         form = SupervisorCreationForm(request.POST)
