@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Sum, Count, F, Q
+from django.db.models import Sum, Count, F, Q, DecimalField, FloatField
 from django.utils import timezone
 from datetime import timedelta
 
@@ -24,7 +24,7 @@ def admin_dashboard(request):
     total_profit = OrderItem.objects.filter(
         order__status__in=['APPROVED', 'SHIPPED', 'DELIVERED']
     ).aggregate(
-        profit=Sum(F('quantity') * F('unit_price') * 0.3)  # Assuming 30% profit margin
+        profit=Sum(F('quantity') * F('unit_price') * 0.3, output_field=DecimalField())  # Assuming 30% profit margin
     )['profit'] or 0
     
     # Get low stock items
@@ -51,7 +51,7 @@ def admin_dashboard(request):
         daily_sales = OrderItem.objects.filter(
             order__created_at__date=date
         ).aggregate(
-            total=Sum(F('quantity') * F('unit_price'))
+            total=Sum(F('quantity') * F('unit_price'), output_field=DecimalField())
         )['total'] or 0
         
         sales_data.append(daily_sales)
@@ -103,7 +103,7 @@ def admin_reports(request):
     total_sales = OrderItem.objects.filter(
         order__created_at__date__range=[start_date, end_date]
     ).aggregate(
-        total=Sum(F('quantity') * F('unit_price'))
+        total=Sum(F('quantity') * F('unit_price'), output_field=DecimalField())
     )['total'] or 0
     
     # Count orders
@@ -123,12 +123,12 @@ def admin_reports(request):
     # Get top selling products
     top_products = Product.objects.annotate(
         units_sold=Sum('orderitem__quantity'),
-        revenue=Sum(F('orderitem__quantity') * F('orderitem__unit_price'))
+        revenue=Sum(F('orderitem__quantity') * F('orderitem__unit_price'), output_field=DecimalField())
     ).filter(units_sold__gt=0).order_by('-units_sold')[:5]
     
     # Get sales by category
     categories = Category.objects.annotate(
-        sales=Sum(F('product__orderitem__quantity') * F('product__orderitem__unit_price'))
+        sales=Sum(F('product__orderitem__quantity') * F('product__orderitem__unit_price'), output_field=DecimalField())
     ).filter(sales__gt=0).order_by('-sales')
     
     category_names = [category.name for category in categories]
@@ -145,7 +145,7 @@ def admin_reports(request):
         daily_sales = OrderItem.objects.filter(
             order__created_at__date=date
         ).aggregate(
-            total=Sum(F('quantity') * F('unit_price'))
+            total=Sum(F('quantity') * F('unit_price'), output_field=DecimalField())
         )['total'] or 0
         
         sales_data.append(float(daily_sales))
