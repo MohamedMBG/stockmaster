@@ -18,7 +18,7 @@
 <!-- Stats Cards -->
 <div class="row g-gs">
     <div class="col-xxl-3 col-md-6">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-icon bg-primary">
@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="col-xxl-3 col-md-6">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-icon bg-warning">
@@ -48,7 +48,7 @@
         </div>
     </div>
     <div class="col-xxl-3 col-md-6">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-icon bg-success">
@@ -63,7 +63,7 @@
         </div>
     </div>
     <div class="col-xxl-3 col-md-6">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-body">
                 <div class="stats-card">
                     <div class="stats-icon bg-info">
@@ -80,7 +80,7 @@
 </div>
 
 <!-- Charts -->
-<div class="row g-gs mt-4">
+<div class="row g-gs">
     <div class="col-xxl-8">
         <div class="card h-100">
             <div class="card-header">
@@ -104,7 +104,7 @@
 </div>
 
 <!-- Recent Transactions -->
-<div class="row g-gs mt-4">
+<div class="row g-gs">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
@@ -176,6 +176,16 @@
                 y: {
                     beginAtZero: true
                 }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
             }
         }
     });
@@ -195,7 +205,9 @@
                     '#09c2de',
                     '#e85347',
                     '#364a63'
-                ]
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
             }]
         },
         options: {
@@ -203,10 +215,28 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        boxWidth: 12
+                    }
                 }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
             }
         }
+    });
+
+    // Add fade-in animation to cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('fade-in');
+            }, index * 100);
+        });
     });
 </script>
 {% endblock %}
