@@ -14,6 +14,7 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('profile/update/', views.profile_update, name='profile_update'),
     path('profile/image/update/', views.profile_image_update, name='profile_image_update'),
+    path('profile/password/change/', views.CustomPasswordChangeView.as_view(), name='change_password'),
     
     # Admin-only URLs
     path('supervisors/add/', views.add_supervisor, name='add_supervisor'),

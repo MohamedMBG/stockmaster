@@ -11,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, ListView
 from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
 import csv
 import datetime
 
@@ -87,7 +89,7 @@ def dashboard(request):
     # Common data for all users
     context = {
         'total_products': Product.objects.count(),
-        'low_stock_count': Product.objects.filter(quantity__lte=models.F('reorder_level')).count(),
+        'low_stock_count': Product.objects.filter(quantity__lte=F('reorder_level')).count(),
     }
     
     # Role-specific data
@@ -150,6 +152,16 @@ def profile_image_update(request):
         form = ProfileImageForm(instance=request.user)
     
     return render(request, 'stock/profile_image_update.html', {'form': form})
+
+# Password Change View
+class CustomPasswordChangeView(PasswordChangeView):
+    form_class = PasswordChangeForm
+    template_name = 'stock/password_change.html'
+    success_url = reverse_lazy('profile')
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been changed successfully.")
+        return super().form_valid(form)
 
 # Stock Management Views
 @login_required
