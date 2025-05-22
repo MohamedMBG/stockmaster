@@ -1,0 +1,95 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block title %}Add Supervisor{% endblock %}
+
+{% block content %}
+<div class="nk-block-head nk-block-head-sm">
+    <div class="nk-block-between">
+        <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Add Supervisor</h3>
+            <div class="nk-block-des text-soft">
+                <p>Create a new supervisor account.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-gs">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Supervisor Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'add_supervisor' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_username">Username</label>
+                                <input type="text" class="form-control" id="id_username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_email">Email</label>
+                                <input type="email" class="form-control" id="id_email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_first_name">First Name</label>
+                                <input type="text" class="form-control" id="id_first_name" name="first_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_last_name">Last Name</label>
+                                <input type="text" class="form-control" id="id_last_name" name="last_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_password1">Password</label>
+                                <input type="password" class="form-control" id="id_password1" name="password1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="id_password2">Confirm Password</label>
+                                <input type="password" class="form-control" id="id_password2" name="password2" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Create Supervisor Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Information</h5>
+            </div>
+            <div class="card-body">
+                <p>Supervisors have the following permissions:</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Manage inventory</li>
+                    <li class="list-group-item">Validate orders</li>
+                    <li class="list-group-item">Generate reports</li>
+                    <li class="list-group-item">Supervise stock levels</li>
+                </ul>
+                <div class="alert alert-info mt-3">
+                    <p class="mb-0"><i class="fas fa-info-circle me-1"></i> Only administrators can create supervisor accounts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% load static %}
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="nk-block-head nk-block-head-sm">
+    <div class="nk-block-between">
+        <div class="nk-block-head-content">
+            <h3 class="nk-block-title page-title">Dashboard</h3>
+            <div class="nk-block-des text-soft">
+                <p>Welcome to StockMaster Dashboard.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-gs">
+    <div class="col-xxl-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-icon bg-primary">
+                        <i class="fas fa-boxes text-white"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h6>Total Products</h6>
+                        <h3>{{ total_products }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-icon bg-warning">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h6>Low Stock Items</h6>
+                        <h3>{{ low_stock_count }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-icon bg-success">
+                        <i class="fas fa-shopping-cart text-white"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h6>Total Orders</h6>
+                        <h3>{{ total_orders }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stats-card">
+                    <div class="stats-icon bg-info">
+                        <i class="fas fa-truck text-white"></i>
+                    </div>
+                    <div class="stats-info">
+                        <h6>Total Suppliers</h6>
+                        <h3>{{ total_suppliers }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-gs mt-4">
+    <div class="col-xxl-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Stock Overview</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="stockChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title">Category Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="row g-gs mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Recent Transactions</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>#{{ transaction.id }}</td>
+                                <td>{{ transaction.product.name }}</td>
+                                <td>{{ transaction.get_transaction_type_display }}</td>
+                                <td>{{ transaction.quantity }}</td>
+                                <td>{{ transaction.timestamp|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'IN' %}
+                                    <span class="badge bg-success">Received</span>
+                                    {% else %}
+                                    <span class="badge bg-primary">Issued</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No recent transactions</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Stock Overview Chart
+    var stockCtx = document.getElementById('stockChart').getContext('2d');
+    var stockChart = new Chart(stockCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ product_names|safe }},
+            datasets: [{
+                label: 'Current Stock',
+                data: {{ product_quantities|safe }},
+                backgroundColor: '#854fff',
+                borderColor: '#854fff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Category Distribution Chart
+    var categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    var categoryChart = new Chart(categoryCtx, {
+        type: 'pie',
+        data: {
+            labels: {{ category_names|safe }},
+            datasets: [{
+                data: {{ category_counts|safe }},
+                backgroundColor: [
+                    '#854fff',
+                    '#1ee0ac',
+                    '#f4bd0e',
+                    '#09c2de',
+                    '#e85347',
+                    '#364a63'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
