@@ -37,6 +37,7 @@ urlpatterns = [
     
     # Original stock views
     path('stock/', views.stock_list, name='stock_list'),
+    path('admin/stock/', views.stock_list, name='admin_stock_list'),  # Added alias for admin dashboard
     path('stock/<int:pk>/', views.stock_detail, name='stock_detail'),
     path('stock/add/', views.add_stock, name='add_stock'),
     path('stock/<int:pk>/edit/', views.edit_stock, name='edit_stock'),
