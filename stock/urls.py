@@ -23,6 +23,9 @@ urlpatterns = [
     path('admin/add-supervisor/', admin_add_supervisor, name='admin_add_supervisor'),
     path('admin/reports/', admin_reports, name='admin_reports'),
     path('admin/generate-report/', admin_generate_report, name='admin_generate_report'),
+    path('admin/orders/', views.stock_list, name='admin_orders'),  # Added alias for admin dashboard
+    path('admin/add-stock/', views.add_stock, name='admin_add_stock'),  # Added alias for admin dashboard
+    path('admin/export-stock/', views.export_stock_csv, name='admin_export_stock'),  # Added alias for admin dashboard
     
     # Client views
     path('client/dashboard/', client_dashboard, name='client_dashboard'),
