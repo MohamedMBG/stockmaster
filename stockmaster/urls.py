@@ -4,9 +4,16 @@ from django.contrib.auth import views as auth_views  # Add this import
 from django.conf import settings
 from django.conf.urls.static import static
 
+# Import the admin login view
+from admin_portal.views.auth import admin_login_view, admin_logout_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('stock.urls')),
+    
+    # Custom admin login routes
+    path('admin-login/', admin_login_view, name='admin_login'),
+    path('admin-logout/', admin_logout_view, name='admin_logout'),
     
     # Add these password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
