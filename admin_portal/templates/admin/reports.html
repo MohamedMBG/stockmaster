@@ -1,0 +1,590 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Reports & Analytics{% endblock %}
+{% block page_title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Report Types -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Generate Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-primary w-100 py-3" data-bs-toggle="modal" data-bs-target="#salesReportModal">
+                                <i class="fas fa-chart-line mb-2 d-block fs-4"></i>
+                                Sales Report
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-info w-100 py-3" data-bs-toggle="modal" data-bs-target="#inventoryReportModal">
+                                <i class="fas fa-boxes mb-2 d-block fs-4"></i>
+                                Inventory Report
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-success w-100 py-3" data-bs-toggle="modal" data-bs-target="#productReportModal">
+                                <i class="fas fa-box mb-2 d-block fs-4"></i>
+                                Product Performance
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-secondary w-100 py-3" data-bs-toggle="modal" data-bs-target="#customerReportModal">
+                                <i class="fas fa-users mb-2 d-block fs-4"></i>
+                                Customer Analysis
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Sales Overview</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary active" data-period="weekly">Weekly</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-period="monthly">Monthly</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-period="yearly">Yearly</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                            <div class="stat-card">
+                                <div class="stat-icon primary">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div class="stat-value" id="totalSales">{{ total_sales|floatformat:2 }}</div>
+                                <div class="stat-label">Total Sales</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                            <div class="stat-card">
+                                <div class="stat-icon secondary">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="stat-value" id="orderCount">{{ order_count }}</div>
+                                <div class="stat-label">Orders</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                            <div class="stat-card">
+                                <div class="stat-icon success">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="stat-value" id="avgOrderValue">{{ avg_order_value|floatformat:2 }}</div>
+                                <div class="stat-label">Avg. Order Value</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stat-card">
+                                <div class="stat-icon warning">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="stat-value" id="newCustomers">{{ new_customers }}</div>
+                                <div class="stat-label">New Customers</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="salesOverviewChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products and Categories -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Top Selling Products</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Units Sold</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>{{ product.units_sold }}</td>
+                                    <td>${{ product.revenue|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No sales data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Sales by Category</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categorySalesChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Orders</h5>
+                    <a href="{% url 'admin_orders' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.client.username }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>${{ order.total_amount|floatformat:2 }}</td>
+                                    <td>
+                                        {% if order.status == 'PENDING' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif order.status == 'APPROVED' %}
+                                        <span class="badge bg-primary">Approved</span>
+                                        {% elif order.status == 'SHIPPED' %}
+                                        <span class="badge bg-info">Shipped</span>
+                                        {% elif order.status == 'DELIVERED' %}
+                                        <span class="badge bg-success">Delivered</span>
+                                        {% elif order.status == 'CANCELLED' %}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admin_order_detail' order.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No recent orders</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modals -->
+<!-- Sales Report Modal -->
+<div class="modal fade" id="salesReportModal" tabindex="-1" aria-labelledby="salesReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="salesReportModalLabel">Generate Sales Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'admin_generate_report' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_type" value="sales">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="date_range" class="form-label">Date Range</label>
+                        <select name="date_range" id="date_range" class="form-select">
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="this_week">This Week</option>
+                            <option value="last_week">Last Week</option>
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="this_year">This Year</option>
+                            <option value="custom">Custom Range</option>
+                        </select>
+                    </div>
+                    <div class="row custom-date-range" style="display: none;">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" name="start_date" id="start_date" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" name="end_date" id="end_date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Format</label>
+                        <select name="format" id="format" class="form-select">
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Report Modal -->
+<div class="modal fade" id="inventoryReportModal" tabindex="-1" aria-labelledby="inventoryReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inventoryReportModalLabel">Generate Inventory Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'admin_generate_report' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_type" value="inventory">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inventory_type" class="form-label">Report Type</label>
+                        <select name="inventory_type" id="inventory_type" class="form-select">
+                            <option value="all">All Inventory</option>
+                            <option value="low_stock">Low Stock Items</option>
+                            <option value="out_of_stock">Out of Stock Items</option>
+                            <option value="by_category">By Category</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 category-select" style="display: none;">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="category" id="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Format</label>
+                        <select name="format" id="format" class="form-select">
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Product Performance Modal -->
+<div class="modal fade" id="productReportModal" tabindex="-1" aria-labelledby="productReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productReportModalLabel">Generate Product Performance Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'admin_generate_report' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_type" value="product">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="product_metric" class="form-label">Metric</label>
+                        <select name="product_metric" id="product_metric" class="form-select">
+                            <option value="sales">Sales Volume</option>
+                            <option value="revenue">Revenue</option>
+                            <option value="profit">Profit Margin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_range" class="form-label">Date Range</label>
+                        <select name="date_range" id="date_range" class="form-select">
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="this_quarter">This Quarter</option>
+                            <option value="last_quarter">Last Quarter</option>
+                            <option value="this_year">This Year</option>
+                            <option value="last_year">Last Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Format</label>
+                        <select name="format" id="format" class="form-select">
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Analysis Modal -->
+<div class="modal fade" id="customerReportModal" tabindex="-1" aria-labelledby="customerReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerReportModalLabel">Generate Customer Analysis Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'admin_generate_report' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="report_type" value="customer">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="customer_metric" class="form-label">Analysis Type</label>
+                        <select name="customer_metric" id="customer_metric" class="form-select">
+                            <option value="top_customers">Top Customers</option>
+                            <option value="new_customers">New Customers</option>
+                            <option value="inactive_customers">Inactive Customers</option>
+                            <option value="purchase_frequency">Purchase Frequency</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_range" class="form-label">Date Range</label>
+                        <select name="date_range" id="date_range" class="form-select">
+                            <option value="this_month">This Month</option>
+                            <option value="last_month">Last Month</option>
+                            <option value="this_quarter">This Quarter</option>
+                            <option value="last_quarter">Last Quarter</option>
+                            <option value="this_year">This Year</option>
+                            <option value="last_year">Last Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Format</label>
+                        <select name="format" id="format" class="form-select">
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sales Overview Chart
+        var salesCtx = document.getElementById('salesOverviewChart').getContext('2d');
+        var salesOverviewChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: {{ sales_dates|safe }},
+                datasets: [{
+                    label: 'Sales',
+                    data: {{ sales_data|safe }},
+                    backgroundColor: 'rgba(58, 12, 163, 0.1)',
+                    borderColor: '#3a0ca3',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3a0ca3',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.raw.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Category Sales Chart
+        var categoryCtx = document.getElementById('categorySalesChart').getContext('2d');
+        var categorySalesChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ category_names|safe }},
+                datasets: [{
+                    data: {{ category_sales|safe }},
+                    backgroundColor: [
+                        '#4361ee',
+                        '#3a0ca3',
+                        '#7209b7',
+                        '#f72585',
+                        '#4cc9f0',
+                        '#4895ef',
+                        '#560bad',
+                        '#b5179e'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.label || '';
+                                var value = context.raw || 0;
+                                var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                var percentage = Math.round((value / total) * 100);
+                                return label + ': $' + value.toFixed(2) + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Period buttons
+        const periodButtons = document.querySelectorAll('[data-period]');
+        periodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                periodButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const period = this.getAttribute('data-period');
+                // Here you would fetch new data based on the period
+                // For demo purposes, we'll just update with random data
+                updateChartData(salesOverviewChart, period);
+            });
+        });
+
+        // Custom date range toggle
+        const dateRangeSelects = document.querySelectorAll('#date_range');
+        dateRangeSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                const customDateRanges = document.querySelectorAll('.custom-date-range');
+                customDateRanges.forEach(range => {
+                    if (this.value === 'custom') {
+                        range.style.display = 'flex';
+                    } else {
+                        range.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Category select toggle
+        const inventoryTypeSelect = document.querySelector('#inventory_type');
+        if (inventoryTypeSelect) {
+            inventoryTypeSelect.addEventListener('change', function() {
+                const categorySelect = document.querySelector('.category-select');
+                if (this.value === 'by_category') {
+                    categorySelect.style.display = 'block';
+                } else {
+                    categorySelect.style.display = 'none';
+                }
+            });
+        }
+
+        // Function to update chart data (demo)
+        function updateChartData(chart, period) {
+            let labels, data;
+            
+            switch(period) {
+                case 'weekly':
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data = [1200, 1900, 1500, 2100, 1800, 2500, 2200];
+                    document.getElementById('totalSales').textContent = '13,200.00';
+                    document.getElementById('orderCount').textContent = '142';
+                    document.getElementById('avgOrderValue').textContent = '92.96';
+                    document.getElementById('newCustomers').textContent = '28';
+                    break;
+                case 'monthly':
+                    labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                    data = [8500, 9200, 10500, 11800];
+                    document.getElementById('totalSales').textContent = '40,000.00';
+                    document.getElementById('orderCount').textContent = '435';
+                    document.getElementById('avgOrderValue').textContent = '91.95';
+                    document.getElementById('newCustomers').textContent = '87';
+                    break;
+                case 'yearly':
+                    labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    data = [42000, 38000, 45000, 50000, 52000, 48000, 55000, 57000, 60000, 63000, 68000, 72000];
+                    document.getElementById('totalSales').textContent = '650,000.00';
+                    document.getElementById('orderCount').textContent = '7,245';
+                    document.getElementById('avgOrderValue').textContent = '89.72';
+                    document.getElementById('newCustomers').textContent = '1,256';
+                    break;
+            }
+            
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = data;
+            chart.update();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block body_class %}auth-page{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="{% static 'shared/images/logo.svg' %}" alt="StockMaster Logo" class="auth-logo">
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to continue to StockMaster</p>
+        </div>
+        
+        <div class="auth-body">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Email Address</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.username.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                        <a href="#" class="text-sm">Forgot Password?</a>
+                    </div>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.password.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="remember-me">
+                    <label class="form-check-label" for="remember-me">
+                        Remember me
+                    </label>
+                </div>
+                
+                <div class="d-grid mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <p>Don't have an account? <a href="{% url 'register' %}">Sign up</a></p>
+                </div>
+                
+                <div class="text-center staff-link">
+                    <a href="{% url 'admin_login' %}" class="text-muted">I am staff</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

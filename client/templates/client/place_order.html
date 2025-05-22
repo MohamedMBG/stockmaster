@@ -1,0 +1,139 @@
+{% extends "client/base.html" %}
+{% load static %}
+
+{% block title %}Place Order{% endblock %}
+{% block page_title %}Place Order{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Order Items -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Shopping Cart</h5>
+                </div>
+                <div class="card-body">
+                    {% if cart_items %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="item-image me-3">
+                                                {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                                {% else %}
+                                                <img src="{% static 'shared/images/product-placeholder.jpg' %}" alt="{{ item.product.name }}">
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ item.product.name }}</h6>
+                                                <small class="text-muted">{{ item.product.category.name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${{ item.product.unit_price|floatformat:2 }}</td>
+                                    <td>
+                                        <form action="{% url 'client_update_cart' %}" method="post" class="d-flex align-items-center">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.quantity }}" class="form-control form-control-sm" style="width: 70px;">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary ms-2">Update</button>
+                                        </form>
+                                    </td>
+                                    <td>${{ item.subtotal|floatformat:2 }}</td>
+                                    <td>
+                                        <form action="{% url 'client_remove_from_cart' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Your shopping cart is empty.
+                        <a href="{% url 'client_catalog' %}" class="alert-link">Browse products</a> to add items to your cart.
+                    </div>
+                    {% endif %}
+                </div>
+                {% if cart_items %}
+                <div class="card-footer text-end">
+                    <a href="{% url 'client_catalog' %}" class="btn btn-outline-secondary">Continue Shopping</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card cart-summary">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="cart-items">
+                        {% for item in cart_items %}
+                        <div class="cart-item">
+                            <div class="cart-item-name">{{ item.product.name }} <span class="text-muted">x {{ item.quantity }}</span></div>
+                            <div class="cart-item-price">${{ item.subtotal|floatformat:2 }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="cart-subtotal">
+                        <div>Subtotal</div>
+                        <div>${{ cart_subtotal|floatformat:2 }}</div>
+                    </div>
+                    <div class="cart-shipping">
+                        <div>Shipping</div>
+                        <div>{% if cart_subtotal > 0 %}${{ shipping_cost|floatformat:2 }}{% else %}$0.00{% endif %}</div>
+                    </div>
+                    <div class="cart-total">
+                        <div>Total</div>
+                        <div>${{ cart_total|floatformat:2 }}</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    {% if cart_items %}
+                    <form action="{% url 'client_place_order' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="shipping_address" class="form-label">Shipping Address</label>
+                            <textarea name="shipping_address" id="shipping_address" class="form-control" rows="3" required>{{ user.user_address }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Order Notes (Optional)</label>
+                            <textarea name="notes" id="notes" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="d-grid">
+                        <a href="{% url 'client_catalog' %}" class="btn btn-primary btn-lg">Browse Products</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

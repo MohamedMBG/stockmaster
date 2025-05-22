@@ -1,0 +1,64 @@
+{% extends "shared/base.html" %}
+{% load static %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block body_class %}auth-page admin-auth{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header admin-auth-header">
+            <img src="{% static 'shared/images/logo.svg' %}" alt="StockMaster Logo" class="auth-logo">
+            <h2 class="auth-title">Admin Portal</h2>
+            <p class="auth-subtitle">Sign in to access the admin dashboard</p>
+        </div>
+        
+        <div class="auth-body">
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Email Address</label>
+                    <input type="email" name="username" id="{{ form.username.id_for_label }}" class="form-control form-control-lg" placeholder="admin@admin.com" required>
+                    {% if form.username.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.username.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    <input type="password" name="password" id="{{ form.password.id_for_label }}" class="form-control form-control-lg" placeholder="Enter your password" required>
+                    {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.password.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-grid mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Sign In</button>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{% url 'login' %}" class="text-muted">Return to client login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
